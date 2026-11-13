@@ -192,20 +192,22 @@ def make_point(name: str, rasi_index: int, deg_in_sign: float, lag_rasi: int) ->
 
 
 @app.middleware("http")
-async def log_request_middleware(request, call_next):
-    print(f"Incoming request: method={request.method} path={request.url.path}")
+async def fix_vercel_path(request: Request, call_next):
+    """Normalize Vercel serverless function path rewrites seamlessly."""
+    path = request.scope.get("path", "")
+    for prefix in ["/api/index.py", "/api/index"]:
+        if path.startswith(prefix):
+            new_path = path[len(prefix):]
+            if not new_path or not new_path.startswith("/"):
+                new_path = "/" + new_path
+            request.scope["path"] = new_path
+            break
     return await call_next(request)
 
 
 @app.get("/")
 @app.get("/health")
-@app.get("/api")
-@app.get("/api/health")
-@app.get("/api/index")
-@app.get("/api/index/health")
-@app.get("/api/index.py")
-@app.get("/api/index.py/health")
-def health_check(request: Request):
+def health_check():
     return {
         "status": "healthy",
         "service": "Parrot Cards Astro Engine",
@@ -213,18 +215,10 @@ def health_check(request: Request):
         "calculation_method": "drik (Drik Siddhant)",
         "ayanamsa": "TRUE_PUSHYA (Pushya Paksha Ayanamsa)",
         "version": "1.0.0",
-        "path": request.url.path,
-        "x_matched_path": request.headers.get("x-matched-path"),
-        "x_forwarded_uri": request.headers.get("x-forwarded-uri"),
-        "x_invoke_path": request.headers.get("x-invoke-path"),
-        "headers": dict(request.headers),
     }
 
 
 @app.post("/horoscope")
-@app.post("/api/horoscope")
-@app.post("/api/index/horoscope")
-@app.post("/api/index.py/horoscope")
 def calculate_horoscope(req: HoroscopeRequest):
     try:
         # Enforce Swiss Ephemeris data path
