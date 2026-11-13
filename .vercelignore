@@ -1,0 +1,13 @@
+# Vercel Ignore - Exclude non-runtime files from serverless bundle
+tests/
+Dockerfile
+run.bat
+run.ps1
+README.md
+PyJHora/README.md
+PyJHora/src/jhora/README.md
+PyJHora/src/jhora/README_Package_Structure.md
+PyJHora/Dockerfile
+PyJHora/dockerignore
+PyJHora/release.ps1
+PyJHora/features_per_book.txt
