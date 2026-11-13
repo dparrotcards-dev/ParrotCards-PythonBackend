@@ -191,8 +191,20 @@ def make_point(name: str, rasi_index: int, deg_in_sign: float, lag_rasi: int) ->
     }
 
 
+@app.middleware("http")
+async def log_request_middleware(request, call_next):
+    print(f"Incoming request: method={request.method} path={request.url.path}")
+    return await call_next(request)
+
+
 @app.get("/")
 @app.get("/health")
+@app.get("/api")
+@app.get("/api/health")
+@app.get("/api/index")
+@app.get("/api/index/health")
+@app.get("/api/index.py")
+@app.get("/api/index.py/health")
 def health_check():
     return {
         "status": "healthy",
@@ -205,6 +217,9 @@ def health_check():
 
 
 @app.post("/horoscope")
+@app.post("/api/horoscope")
+@app.post("/api/index/horoscope")
+@app.post("/api/index.py/horoscope")
 def calculate_horoscope(req: HoroscopeRequest):
     try:
         # Enforce Swiss Ephemeris data path
