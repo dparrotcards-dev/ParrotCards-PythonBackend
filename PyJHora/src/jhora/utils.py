@@ -29,14 +29,23 @@
 import os
 import codecs
 import warnings
-import geocoder
+try:
+    import geocoder
+except ImportError:
+    geocoder = None
 import requests
 from pytz import timezone, utc
-from timezonefinder import TimezoneFinder
+try:
+    from timezonefinder import TimezoneFinder
+except ImportError:
+    TimezoneFinder = None
 import csv
 import numpy as np
 import swisseph as swe
-from geopy.geocoders import Nominatim
+try:
+    from geopy.geocoders import Nominatim
+except ImportError:
+    Nominatim = None
 from jhora import const
 
 import json
