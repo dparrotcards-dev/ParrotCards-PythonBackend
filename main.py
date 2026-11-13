@@ -6,7 +6,7 @@ Powered by PyJHora (Drik Siddhant + Pushya Paksha Ayanamsa)
 import sys
 import os
 from typing import Optional, Dict, Any, List
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -205,7 +205,7 @@ async def log_request_middleware(request, call_next):
 @app.get("/api/index/health")
 @app.get("/api/index.py")
 @app.get("/api/index.py/health")
-def health_check():
+def health_check(request: Request):
     return {
         "status": "healthy",
         "service": "Parrot Cards Astro Engine",
@@ -213,6 +213,11 @@ def health_check():
         "calculation_method": "drik (Drik Siddhant)",
         "ayanamsa": "TRUE_PUSHYA (Pushya Paksha Ayanamsa)",
         "version": "1.0.0",
+        "path": request.url.path,
+        "x_matched_path": request.headers.get("x-matched-path"),
+        "x_forwarded_uri": request.headers.get("x-forwarded-uri"),
+        "x_invoke_path": request.headers.get("x-invoke-path"),
+        "headers": dict(request.headers),
     }
 
 
